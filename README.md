@@ -1,4 +1,4 @@
-# web-scraping-with-python
+# Web Scraping example with Python
 
 This script is developped with Python version 3.
 It aims to connect to https://www.imdb.com/ and get some relevant informations about movies that were released in 2017 for example,
