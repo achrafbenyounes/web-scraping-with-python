@@ -6,34 +6,34 @@ from requests import get
 from bs4 import BeautifulSoup
 import pandas as pd
 
-#Paginer sur le site jusqu'à 4 pages, use comprehension list to create a list of strings containing the page number
+# Use pagination to navigate(until 4 pages), use comprehension list to create a list of strings containing the page number
 pages = [str(i) for i in range(1,5)]
 
-#Chercher les films entre 2017 et 2018
+# Searche the movies between 2017 and 2018
 years_url = [str(i) for i in range(2000, 2018)]
 
-#On fixe la date de début du script
+# Fix the date at starting script
 start_time = time()
 
-#Variable qui calcule le nombre de requête
+# Variable which calculates the request number
 requests = 0
 
-# Pour chaque année entre 2000 et 2017
+# For every year between 2000 and 2017
 for year_url in years_url:
-    #Pour chaque page entre 1 et 4
+    # For every page between 1 et 4
     for page in pages:
-        # Faire une requête GET sur le site imdb
+        # Do a http GET sur le site imdb
         response = get('https://www.imdb.com/search/title/?release_date='+year_url + '&sort=num_votes,desc&page='+ page +'')
-        # Pause la boucle de 8 à 15 secondes
+        # Pause the loop between 8 until 15 secondes
         sleep(randint(8, 15))
-        #Afficher les informations sur les requêtes
-        request += 1 # Il s'agit d'une nouvelle requête, on incrémente par 1
-        sleep(randint(1, 3)) # On fait une pause de 1 à 3 secondes
-        elapsed_time = time() - start_time # On calcule le temps écoulé depuis la première requête
+        # Display request data
+        request += 1 # new request, we increment this variable by 1
+        sleep(randint(1, 3)) # Do a wait between 1 and 3 secondes
+        elapsed_time = time() - start_time # Calculate elapsed time since the first request
         print("Requests{}; Frequency{} requests/s".format(request, request/elapsed_time))
         clear_output(wait = True)
         
-        #Si le status code est différent de 200, il y a un problème et il faut avertir
+        # If the status code is different from 200, there is a problem, we must warning that
         if response.status_code != 200:
             warn('Request:{}; status_code:{}'.format(request, response.status_code))
 
@@ -41,36 +41,36 @@ for year_url in years_url:
         html_soup = BeautifulSoup(response.text, 'html.parser')
         movies_container = html_soup .find_all('div', class_="lister-item mode-advanced")
 
-        # On crée des listes vides contenant toutes nos informations
+        # Create empty lists containg all the necessary data
         names = []
         years = []
         imdb_ratings = []
         meta_scores = []
         votes = []
 
-        # On reprend notre movies_container pour y extraire l'information
+        # We base on movies_container for dat extraction
 
         for container in movies_container:
     
-            # Si le film a une métascore, on l'extrait
+            # if the movies has a metascore, we scrap this information
             if container.find('div', class_="ratings-metascore") is not None:
-                #Extraire nom du film
+                # Scrap the movie name
                 name = container.h3.a.text
-                names.append(name) # on ajoute chaque nom du film à la liste
+                names.append(name) # We add every movie to the list
         
-                #Extraire year de film
+                # Scrap the movie's year
                 year = container.h3.find('span', class_='lister-item-year text-muted unbold').get_text()
                 years.append(year) # On ajouter l'année de sortie de film
         
-                #Extraire la note imdb 
+                # Scrap the imdb note
                 imdb_rating = float(container.strong.text)
                 imdb_ratings.append(imdb_rating)
         
-                #Extraire le metascore
+                # Scrap the metascore
                 meta_score = container.find('div', class_='inline-block ratings-metascore').span.get_text()
                 meta_scores.append(int(meta_score))
             
-                #Extraire le nombre de votes
+                # Scrap the nb votes
                 vote = container.find('span', attrs={"name":"nv"})['data-value']
                 votes.append(int(vote))
 
